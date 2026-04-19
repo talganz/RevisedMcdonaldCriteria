@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2024 McDonald Criteria Tool</title>
+    <title>2024 McDonald Criteria Tool | Hadassah</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; color: #333; max-width: 850px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; }
-        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-        h1 { color: #2c3e50; font-size: 1.6rem; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); position: relative; }
+        
+        /* Header & Logo Styles */
+        .header-box { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
+        .logo-img { height: 60px; width: auto; }
+        h1 { color: #2c3e50; font-size: 1.5rem; margin: 0; }
+        
         h2 { font-size: 1.1rem; margin-top: 0; color: #34495e; margin-bottom: 10px; }
         section { margin-bottom: 20px; padding: 15px; border: 1px solid #e1e4e8; border-radius: 8px; }
         
@@ -18,8 +23,9 @@
         .red-flag-alert { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
         .info-alert { background-color: #d1ecf1; border-color: #0c5460; color: #0c5460; }
 
+        /* Tooltip Styles */
         .tooltip { position: relative; display: inline-block; border-bottom: 1px dotted #3498db; cursor: help; color: #2980b9; font-weight: 500; }
-        .tooltip .tooltiptext { visibility: hidden; width: 300px; background-color: #333; color: #fff; text-align: left; border-radius: 6px; padding: 12px; position: absolute; z-index: 10; bottom: 125%; left: 50%; margin-left: -150px; opacity: 0; transition: opacity 0.3s; font-size: 0.8rem; font-weight: normal; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .tooltip .tooltiptext { visibility: hidden; width: 300px; background-color: #333; color: #fff; text-align: left; border-radius: 6px; padding: 12px; position: absolute; z-index: 10; bottom: 125%; left: 50%; margin-left: -150px; opacity: 0; transition: opacity 0.3s; font-size: 0.8rem; font-weight: normal; }
         .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
 
         select, button { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem; }
@@ -31,21 +37,31 @@
         .inconclusive { background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
         
         footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; font-size: 0.8rem; color: #7f8c8d; text-align: center; }
+        .footer-logo { height: 35px; margin-bottom: 10px; opacity: 0.8; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>MS Diagnostic Assistant (2024 Revisions)</h1>
+    <div class="header-box">
+        <!-- Replace 'hadassah-logo.png' with your actual filename or URL -->
+        <img src="hadassah-logo.png" alt="Hadassah Logo" class="logo-img" onerror="this.style.display='none'">
+        <h1>MS Diagnostic Assistant</h1>
+    </div>
     
-    <section>
+    <section id="profile">
         <h2>1. Patient Profile</h2>
         <div class="flex-row">
             <div><input type="checkbox" id="age_under_12"> <label for="age_under_12">< 12y</label></div>
             <div><input type="checkbox" id="age_12_18"> <label for="age_12_18">12-18y</label></div>
             <div><input type="checkbox" id="age_over_50"> <label for="age_over_50">≥ 50y</label></div>
-            <div><input type="checkbox" id="vascular_risk"> <label for="vascular_risk">Vascular Risk</label></div>
+            <div>
+                <input type="checkbox" id="vascular_risk"> 
+                <span class="tooltip">Vascular Risk
+                    <span class="tooltiptext">Includes: Hypertension, Smoking, Diabetes, Hyperlipidemia, or known Macrovascular disease (Panel 6).</span>
+                </span>
+            </div>
             <div><input type="checkbox" id="adem"> <label for="adem">ADEM-like</label></div>
         </div>
         
@@ -53,7 +69,7 @@
             <strong>Pediatric Tip:</strong> In patients < 12y, serum MOG-IgG is strongly recommended. For < 18y, CVS is positive only if ≥ 50% of lesions show the sign.
         </div>
         <div id="red_alert" class="alert red-flag-alert">
-            <strong>Vascular Risk / Age 50+:</strong> Misdiagnosis is common. Specific confirmation via Spinal MRI, CSF, or CVS is required to support diagnosis.
+            <strong>High-Risk Profile (Age 50+ / Vascular):</strong> Increased risk of misdiagnosis. Confirmation via Spinal MRI, CSF, or CVS is strongly recommended.
         </div>
     </section>
 
@@ -84,7 +100,7 @@
             <div>
                 <strong>Supportive Biomarkers:</strong><br>
                 <input type="checkbox" id="csf"> <span class="tooltip">CSF Positive (OCB/kFLC)<span class="tooltiptext">Intrathecal antibody synthesis: OCB or positive kFLC index are interchangeable.</span></span><br>
-                <input type="checkbox" id="cvs"> <span class="tooltip">CVS Positive (Select 6)<span class="tooltiptext"><b>Select 6 Rule:</b> ≥6 CVS+ lesions; or majority if <10 lesions. (Peds: ≥50% of lesions).</span></span><br>
+                <input type="checkbox" id="cvs"> <span class="tooltip">CVS Positive (Select 6)<span class="tooltiptext"><b>Select 6 Rule:</b> ≥6 CVS+ lesions; or majority if <10 lesions. (Pediatrics: ≥50% of lesions).</span></span><br>
                 <input type="checkbox" id="dit"> DIT Positive (New or mixed lesions)<br>
                 <input type="checkbox" id="prl"> <span class="tooltip">PRL Positive<span class="tooltiptext">Paramagnetic Rim Lesions: Presence of ≥1 chronic active lesion with iron-laden microglia.</span></span>
             </div>
@@ -96,8 +112,10 @@
     <div id="result"></div>
 
     <footer>
+        <img src="hadassah-logo.png" alt="Hadassah Logo" class="footer-logo" onerror="this.style.display='none'"><br>
+        <p>Developed by <strong>Hadassah Medical Center</strong> Neuroimmunology Unit.</p>
         <p><strong>Reference:</strong> Montalban X, et al. Diagnosis of multiple sclerosis: 2024 revisions of the McDonald criteria. <em>Lancet Neurol</em>. 2025; 24: 850-865.</p>
-        <p><em>Educational purpose only. Clinical judgment and exclusion of mimics (no better explanation) are mandatory.</em></p>
+        <p><em>Educational purpose only. Clinical judgment and exclusion of mimics are mandatory.</em></p>
     </footer>
 </div>
 
@@ -108,7 +126,6 @@
         row.style.display = (type === 'progressive') ? 'block' : 'none';
     }
 
-    // Toggle Profile Alerts
     document.querySelectorAll('#profile input, .flex-row input').forEach(el => {
         el.addEventListener('change', () => {
             const isPed = document.getElementById('age_under_12').checked || document.getElementById('age_12_18').checked;
@@ -150,7 +167,6 @@
         }
 
         let effectiveDIS = dis;
-        // PPMS 2-spinal rule override
         if (type === 'progressive' && sp2) effectiveDIS = Math.max(effectiveDIS, 2);
 
         let met = false;
@@ -161,7 +177,6 @@
             if (effectiveDIS >= 2 && (csf || cvs || dit)) met = true;
         }
 
-        // Apply Red Flag specificity override (Panel 6)
         if (met && isOld && !(sp1 || sp2 || csf || cvs)) met = false;
 
         if (met) {
@@ -169,7 +184,7 @@
             res.innerHTML = "<h3>MS Diagnosis Met</h3> The patient fulfills the 2024 McDonald Criteria.";
         } else {
             res.classList.add('inconclusive');
-            res.innerHTML = "<h3>Criteria Not Fully Met</h3> Monitor for clinical activity or radiological changes. Consider differential diagnosis.";
+            res.innerHTML = "<h3>Criteria Not Fully Met</h3> Consider alternative diagnoses or monitor for clinical evolution.";
         }
     }
 </script>
