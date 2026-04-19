@@ -5,16 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2024 McDonald Criteria Tool</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; }
         .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        section { margin-bottom: 25px; padding: 15px; border: 1px solid #e1e4e8; border-radius: 5px; }
+        section { margin-bottom: 25px; padding: 15px; border: 1px solid #e1e4e8; border-radius: 5px; position: relative; }
         h2 { font-size: 1.2rem; margin-top: 0; color: #34495e; }
         .checkbox-group { margin: 10px 0; }
-        .warning { background-color: #fff3cd; border-left: 5px solid #ffeeba; padding: 10px; margin: 10px 0; font-size: 0.9rem; }
-        button { background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; }
+        .warning { background-color: #fff3cd; border-left: 5px solid #ffeeba; padding: 15px; margin: 10px 0; font-size: 0.95rem; }
+        .alert { padding: 15px; margin-top: 10px; display: none; border-left: 5px solid; }
+        .red-flag-alert { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
+        .info-alert { background-color: #d1ecf1; border-color: #0c5460; color: #0c5460; }
+        
+        button { background-color: #3498db; color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-size: 1rem; width: 100%; }
         button:hover { background-color: #2980b9; }
-        #result { margin-top: 20px; padding: 20px; border-radius: 5px; display: none; }
+        
+        .tooltip { position: relative; display: inline-block; border-bottom: 1px dotted #666; cursor: help; color: #2980b9; }
+        .tooltip .tooltiptext { visibility: hidden; width: 280px; background-color: #333; color: #fff; text-align: left; border-radius: 6px; padding: 10px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -140px; opacity: 0; transition: opacity 0.3s; font-size: 0.85rem; }
+        .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+
+        #result { margin-top: 25px; padding: 20px; border-radius: 5px; display: none; }
         .positive { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
         .inconclusive { background-color: #e2e3e5; border: 1px solid #d6d8db; color: #383d41; }
     </style>
@@ -22,49 +31,60 @@
 <body>
 
 <div class="container">
-    <h1>MS Diagnostic Tool (2024 Criteria)</h1>
-    <p class="warning"><strong>Disclaimer:</strong> For educational purposes only. Diagnosis must exclude better explanations.</p>
-
-    <!-- Section 1: Patient Profile -->
+    <h1>MS Diagnostic Tool (2024 Revisions)</h1>
+    
     <section id="profile">
-        <h2>1. Patient Profile & Red Flags</h2>
+        <h2>1. Patient Profile</h2>
         <div class="checkbox-group">
-            <input type="checkbox" id="age_under_18"> <label>Age < 18 years</label><br>
+            <input type="checkbox" id="age_under_12"> <label>Age < 12 years</label><br>
+            <input type="checkbox" id="age_12_18"> <label>Age 12-18 years</label><br>
+            <input type="checkbox" id="adem_presentation"> <label>Initial presentation was ADEM-like</label><br>
             <input type="checkbox" id="age_over_50"> <label>Age ≥ 50 years</label><br>
-            <input type="checkbox" id="vascular_risk"> <label>Vascular risk factors (Hypertension, Diabetes, Smoking, etc.)</label><br>
-            <input type="checkbox" id="comorbidities"> <label>Comorbidities (Migraine, Small Vessel Disease, etc.)</label>
+            <input type="checkbox" id="vascular_risk"> <label>Vascular risks (HTN, Diabetes, smoking, etc.)</label>
         </div>
-        <div id="extra_caution" class="warning" style="display:none;">
-            Note: In older patients or those with vascular risks, additional specific features (CSF, CVS, or Spinal lesions) are strongly recommended to confirm diagnosis.
+        
+        <div id="pediatric_alert" class="alert info-alert">
+            <strong>Pediatric Recommendation:</strong> In children < 12y, serum MOG-IgG testing is strongly recommended. For all < 18y, CVS is considered positive only if present in ≥ 50% of lesions.
+        </div>
+        <div id="red_flag_alert" class="alert red-flag-alert">
+            <strong>Age 50+ / Vascular Risk:</strong> Confirmation requires Spinal MRI, CSF positivity, or CVS to maintain specificity.
         </div>
     </section>
 
-    <!-- Section 2: Clinical Presentation -->
     <section id="presentation">
         <h2>2. Clinical Presentation</h2>
-        <select id="presentation_type">
+        <select id="presentation_type" style="width: 100%; padding: 8px;">
             <option value="">-- Select Presentation --</option>
             <option value="typical">Typical Attack (CIS)</option>
             <option value="progressive">Objective Progression (≥ 12 months)</option>
-            <option value="ris">RIS / Non-specific symptoms (Incidental findings)</option>
+            <option value="ris">RIS / Non-specific symptoms</option>
         </select>
     </section>
 
-    <!-- Section 3: Diagnostic Workup -->
     <section id="workup">
-        <h2>3. Evidence of Lesions (DIS)</h2>
-        <p>Check all involved CNS locations:</p>
-        <input type="checkbox" class="dis" value="periventricular"> Periventricular<br>
-        <input type="checkbox" class="dis" value="cortical"> Cortical / Juxtacortical<br>
-        <input type="checkbox" class="dis" value="infratentorial"> Infratentorial<br>
-        <input type="checkbox" class="dis" value="spinal"> Spinal Cord<br>
-        <input type="checkbox" class="dis" value="optic"> Optic Nerve (MRI, OCT, or VEP evidence)<br>
+        <h2>3. Dissemination in Space (DIS)</h2>
+        <div class="checkbox-group">
+            <input type="checkbox" class="dis" value="periventricular"> Periventricular<br>
+            <input type="checkbox" class="dis" value="cortical"> Cortical / Juxtacortical<br>
+            <input type="checkbox" class="dis" value="infratentorial"> Infratentorial<br>
+            <input type="checkbox" class="dis" id="spinal_1"> Spinal Cord (≥ 1 lesion)<br>
+            <input type="checkbox" id="spinal_2"> 
+            <span class="tooltip">Spinal Cord (≥ 2 lesions)
+                <span class="tooltiptext">In progressive MS, 2 spinal lesions alone satisfy DIS requirements.</span>
+            </span><br>
+            <input type="checkbox" class="dis" value="optic"> 
+            <span class="tooltip">Optic Nerve
+                <span class="tooltiptext">MRI (intrinsic lesion), OCT (pRNFL diff ≥6μm / GCIPL ≥4μm), or VEP (P100 >2.5 SD).</span>
+            </span>
+        </div>
         
-        <h2 style="margin-top:20px;">4. Supporting Biomarkers</h2>
-        <input type="checkbox" id="csf_positive"> CSF Positive (OCB or kFLC index)<br>
-        <input type="checkbox" id="cvs_positive"> CVS Positive (Select 6 rule)<br>
-        <input type="checkbox" id="dit_positive"> DIT Positive (New lesions or Gad+ and Gad-)<br>
-        <input type="checkbox" id="prl_positive"> PRL Positive (≥ 1 Paramagnetic Rim Lesion)
+        <h2 style="margin-top:20px;">4. Supportive Evidence</h2>
+        <div class="checkbox-group">
+            <input type="checkbox" id="csf_positive"> <span class="tooltip">CSF+ (OCB/kFLC)<span class="tooltiptext">kFLC index and OCB are interchangeable in the 2024 criteria.</span></span><br>
+            <input type="checkbox" id="cvs_positive"> <span class="tooltip">CVS+<span class="tooltiptext">Adults: Select 6 rule. Pediatrics (<18y): ≥ 50% of lesions.</span></span><br>
+            <input type="checkbox" id="dit_positive"> DIT+ (New lesions or Gad+/-)<br>
+            <input type="checkbox" id="prl_positive"> PRL+ (≥ 1 Paramagnetic Rim Lesion)
+        </div>
     </section>
 
     <button onclick="evaluateCriteria()">Evaluate Diagnosis</button>
@@ -73,72 +93,67 @@
 </div>
 
 <script>
-    // Show warning if age > 50 or vascular risk
-    document.getElementById('age_over_50').addEventListener('change', toggleWarning);
-    document.getElementById('vascular_risk').addEventListener('change', toggleWarning);
-
-    function toggleWarning() {
-        const show = document.getElementById('age_over_50').checked || document.getElementById('vascular_risk').checked;
-        document.getElementById('extra_caution').style.display = show ? 'block' : 'none';
+    // Handle Alerts
+    function updateAlerts() {
+        const isPediatric = document.getElementById('age_under_12').checked || document.getElementById('age_12_18').checked;
+        const isOlder = document.getElementById('age_over_50').checked || document.getElementById('vascular_risk').checked;
+        document.getElementById('pediatric_alert').style.display = isPediatric ? 'block' : 'none';
+        document.getElementById('red_flag_alert').style.display = isOlder ? 'block' : 'none';
     }
+    document.querySelectorAll('#profile input').forEach(el => el.addEventListener('change', updateAlerts));
 
     function evaluateCriteria() {
         const presentation = document.getElementById('presentation_type').value;
-        const disCount = document.querySelectorAll('.dis:checked').length;
+        const isPediatric = document.getElementById('age_under_12').checked || document.getElementById('age_12_18').checked;
+        const isOlder = document.getElementById('age_over_50').checked || document.getElementById('vascular_risk').checked;
+        const isADEM = document.getElementById('adem_presentation').checked;
+        
+        let disCount = document.querySelectorAll('.dis:checked').length;
+        const spinal1 = document.getElementById('spinal_1').checked;
+        const spinal2 = document.getElementById('spinal_2').checked;
+        if (spinal1) disCount++; // Manual fix for checkboxes
+
         const csf = document.getElementById('csf_positive').checked;
         const cvs = document.getElementById('cvs_positive').checked;
         const dit = document.getElementById('dit_positive').checked;
         const prl = document.getElementById('prl_positive').checked;
-        const over50 = document.getElementById('age_over_50').checked || document.getElementById('vascular_risk').checked;
 
         let resultDiv = document.getElementById('result');
         resultDiv.style.display = 'block';
         resultDiv.className = '';
 
-        if (!presentation) {
-            resultDiv.innerHTML = "Please select a clinical presentation.";
+        if (isADEM) {
+            resultDiv.classList.add('inconclusive');
+            resultDiv.innerHTML = "<h3>Diagnosis Delayed</h3> In ADEM-like presentations, MS cannot be diagnosed until a second attack or new lesions appear after > 90 days.";
             return;
         }
 
-        // Logic Implementation based on Page 858 (Figure 3) and Page 859
         let diagnosed = false;
-        let note = "";
+
+        // PPMS 2-spinal-lesion rule [cite: 191, 323]
+        let effectiveDIS = disCount;
+        if (presentation === 'progressive' && spinal2) effectiveDIS = Math.max(effectiveDIS, 2);
 
         if (presentation === 'typical' || presentation === 'progressive') {
-            if (disCount >= 2) {
-                if (csf || cvs || dit || disCount >= 4) {
-                    diagnosed = true;
-                }
-            } else if (disCount === 1) {
-                if ((csf && cvs) || (csf && prl) || (dit && cvs) || (dit && prl)) {
-                    diagnosed = true;
-                }
-            }
+            if (effectiveDIS >= 2 && (csf || cvs || dit || effectiveDIS >= 4)) diagnosed = true;
+            else if (effectiveDIS === 1 && ((csf || dit) && (cvs || prl))) diagnosed = true;
         } else if (presentation === 'ris') {
-            // RIS/Non-specific Logic (Figure 2)
-            if (disCount >= 2 && (csf || cvs || dit)) {
-                diagnosed = true;
-            }
+            if (effectiveDIS >= 2 && (csf || cvs || dit)) diagnosed = true;
         }
 
-        // Special recommendation for >50 or vascular risk
-        if (diagnosed && over50) {
-            const extraValid = document.querySelector('.dis[value="spinal"]:checked') || csf || cvs;
-            if (!extraValid) {
-                diagnosed = false;
-                note = "<strong>Note:</strong> Criteria met, but for patients ≥50 or with vascular risk, additional confirmation (Spinal lesion, CSF, or CVS) is strongly recommended[cite: 1].";
-            }
+        // Apply Red Flag (Age 50+) rule [cite: 431, 450]
+        if (diagnosed && isOlder && !(spinal1 || spinal2 || csf || cvs)) {
+            diagnosed = false;
         }
 
         if (diagnosed) {
             resultDiv.classList.add('positive');
-            resultDiv.innerHTML = "<h3>Diagnosis Met (2024 Criteria)</h3>" + (note || "The patient fulfills the requirements for MS diagnosis.");
+            resultDiv.innerHTML = "<h3>MS Diagnosis Met</h3> Based on the 2024 McDonald Criteria.";
         } else {
             resultDiv.classList.add('inconclusive');
-            resultDiv.innerHTML = "<h3>Criteria Not Fully Met</h3> Monitor for new clinical or imaging changes.";
+            resultDiv.innerHTML = "<h3>Criteria Not Met</h3> Monitor for new activity or reconsider differential diagnosis.";
         }
     }
 </script>
-
 </body>
 </html>
